@@ -7,7 +7,8 @@
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",
     "check": "biome check .",
-    "check:fix": "biome check --write ."
+    "check:fix": "biome check --write .",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "hono": "^4.13.3"
@@ -15,6 +16,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.5.9",
     "@types/bun": "latest",
-    "lefthook": "^2.1.10"
+    "lefthook": "^2.1.10",
+    "typescript": "^7.0.2"
   }
 }
