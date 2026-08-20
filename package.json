@@ -15,11 +15,12 @@
     "test": "bun test"
   },
   "dependencies": {
+    "@cf-wasm/photon": "^0.4.0",
+    "@cf-wasm/resvg": "^0.4.0",
     "@hono/zod-validator": "^0.9.0",
     "hono": "^4.13.3",
     "http-errors": "^2.0.1",
     "mime": "^4.1.0",
-    "sharp": "^0.35.3",
     "zod": "^4.4.3",
     "zod-validation-error": "^5.0.0"
   },

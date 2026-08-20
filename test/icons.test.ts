@@ -48,7 +48,7 @@ describe("Extension validation", () => {
   });
 
   test("accepts supported image extensions", async () => {
-    for (const ext of ["png", "jpg", "jpeg", "webp", "avif"]) {
+    for (const ext of ["png", "jpg", "jpeg", "webp"]) {
       const res: Response = await client[":set"][":name"].$get({
         param: { set: "lucide", name: `activity.${ext}` },
       });
