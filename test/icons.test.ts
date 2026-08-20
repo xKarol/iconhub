@@ -4,9 +4,10 @@ import app from "~/index";
 
 const client = testClient(app);
 
-type ZodErrorBody = {
-  success: false;
-  error: { name: string; message: string };
+type ErrorBody = {
+  status: number;
+  message: string;
+  stack?: string;
 };
 
 describe("GET /:set/:name.svg", () => {
@@ -48,15 +49,14 @@ describe("Extension validation", () => {
 });
 
 describe("Zod validation error format", () => {
-  test("validation error has success=false and ZodError structure", async () => {
+  test("validation error has status and message fields", async () => {
     const res: Response = await client[":set"][":name"].$get({
       param: { set: "unknown", name: "icon.svg" },
     });
     expect(res.status).toBe(400);
-    const body = (await res.json()) as ZodErrorBody;
-    expect(body.success).toBe(false);
-    expect(body.error).toHaveProperty("name", "ZodError");
-    expect(body.error).toHaveProperty("message");
+    const body = (await res.json()) as ErrorBody;
+    expect(body.status).toBe(400);
+    expect(typeof body.message).toBe("string");
   });
 
   test("validation errors are JSON", async () => {
@@ -99,8 +99,8 @@ describe("Error message content", () => {
     const res: Response = await client[":set"][":name"].$get({
       param: { set: "badset", name: "icon.svg" },
     });
-    const body = (await res.json()) as ZodErrorBody;
-    expect(body.error.message).toContain("Unsupported icon set");
+    const body = (await res.json()) as ErrorBody;
+    expect(body.message).toContain("Unsupported icon set");
   });
 
   test("404 for missing icon mentions the requested icon", async () => {
@@ -115,8 +115,8 @@ describe("Error message content", () => {
     const res: Response = await client[":set"][":name"].$get({
       param: { set: "lucide", name: "activity.webp" },
     });
-    const body = (await res.json()) as ZodErrorBody;
-    expect(body.error.message).toContain(".svg");
+    const body = (await res.json()) as ErrorBody;
+    expect(body.message).toContain(".svg");
   });
 });
 
@@ -126,8 +126,8 @@ describe("Malformed request parameters", () => {
       param: { set: "lucide", name: "activity" },
     });
     expect(res.status).toBe(400);
-    const body = (await res.json()) as ZodErrorBody;
-    expect(body.success).toBe(false);
+    const body = (await res.json()) as ErrorBody;
+    expect(body.status).toBe(400);
   });
 
   test("rejects name with multiple dots", async () => {
