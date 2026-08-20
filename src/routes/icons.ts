@@ -2,8 +2,10 @@ import { Hono } from "hono";
 import httpErrors from "http-errors";
 import mime from "mime/lite";
 import { z } from "zod";
+import { SIZE_DEFAULT, SIZE_MAX, SIZE_MIN } from "~/constants";
 import { iconSets } from "~/generated/sets";
 import { convertSvg, type ImageExtension } from "~/lib/convert";
+import { injectSvgSize } from "~/lib/svg";
 import { zValidator } from "~/middlewares/zod-validator";
 
 const extensionSchema = z.enum(["svg", "png", "jpg", "jpeg", "webp"]);
@@ -31,6 +33,15 @@ const paramsSchema = z.object({
     }),
 });
 
+const querySchema = z.object({
+  size: z.coerce
+    .number()
+    .int()
+    .min(SIZE_MIN, `Size must be at least ${SIZE_MIN}`)
+    .max(SIZE_MAX, `Size must be at most ${SIZE_MAX}`)
+    .optional(),
+});
+
 type Bindings = {
   ASSETS?: {
     fetch: typeof fetch;
@@ -44,6 +55,13 @@ export const iconsRoute = new Hono<{
     set,
     name: [name, ext],
   } = c.req.valid("param");
+
+  const parsed = querySchema.safeParse({ size: c.req.query("size") });
+  if (!parsed.success) {
+    throw parsed.error;
+  }
+  const { size: rawSize } = parsed.data;
+  const size = rawSize ?? SIZE_DEFAULT;
 
   let svg: string;
   if (c.env?.ASSETS) {
@@ -69,11 +87,13 @@ export const iconsRoute = new Hono<{
     );
   }
 
+  const sizedSvg = injectSvgSize(svg, size);
+
   if (ext === "svg") {
-    return c.body(svg, 200, { "Content-Type": contentType });
+    return c.body(sizedSvg, 200, { "Content-Type": contentType });
   }
 
-  const image = await convertSvg(svg, ext as ImageExtension);
+  const image = await convertSvg(sizedSvg, ext as ImageExtension);
   return new Response(image.buffer as ArrayBuffer, {
     status: 200,
     headers: { "Content-Type": contentType },
