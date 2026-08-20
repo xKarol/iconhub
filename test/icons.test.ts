@@ -40,11 +40,20 @@ describe("GET /:set/:name.svg", () => {
 });
 
 describe("Extension validation", () => {
-  test("rejects non-svg extensions with 400", async () => {
+  test("rejects unsupported extensions with 400", async () => {
     const res: Response = await client[":set"][":name"].$get({
-      param: { set: "lucide", name: "activity.png" },
+      param: { set: "lucide", name: "activity.bmp" },
     });
     expect(res.status).toBe(400);
+  });
+
+  test("accepts supported image extensions", async () => {
+    for (const ext of ["png", "jpg", "jpeg", "webp", "avif"]) {
+      const res: Response = await client[":set"][":name"].$get({
+        param: { set: "lucide", name: `activity.${ext}` },
+      });
+      expect(res.status).toBe(200);
+    }
   });
 });
 
@@ -61,7 +70,7 @@ describe("Zod validation error format", () => {
 
   test("validation errors are JSON", async () => {
     const res: Response = await client[":set"][":name"].$get({
-      param: { set: "lucide", name: "activity.png" },
+      param: { set: "lucide", name: "activity.bmp" },
     });
     expect(res.headers.get("content-type")).toContain("application/json");
   });
@@ -113,10 +122,11 @@ describe("Error message content", () => {
 
   test("400 for unsupported extension mentions expected extensions", async () => {
     const res: Response = await client[":set"][":name"].$get({
-      param: { set: "lucide", name: "activity.webp" },
+      param: { set: "lucide", name: "activity.bmp" },
     });
     const body = (await res.json()) as ErrorBody;
     expect(body.message).toContain(".svg");
+    expect(body.message).toContain(".png");
   });
 });
 
@@ -150,7 +160,7 @@ describe("Error handler integration", () => {
     const errorCases = [
       { set: "unknown", name: "icon.svg" },
       { set: "lucide", name: "nonexistent.svg" },
-      { set: "lucide", name: "activity.png" },
+      { set: "lucide", name: "activity.bmp" },
     ];
 
     for (const params of errorCases) {
