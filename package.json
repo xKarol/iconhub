@@ -2,8 +2,9 @@
   "name": "iconhub",
   "scripts": {
     "dev": "bun run --hot src/index.ts",
-    "cf:dev": "wrangler dev",
-    "deploy": "wrangler deploy",
+    "cf:dev": "bun run build:sets && wrangler dev",
+    "deploy": "bun run build:sets && wrangler deploy",
+    "build:sets": "bun run scripts/generate-sets.ts",
     "format": "biome format .",
     "format:fix": "biome format --write .",
     "lint": "biome lint .",

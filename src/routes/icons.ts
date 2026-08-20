@@ -2,17 +2,18 @@ import { Hono } from "hono";
 import httpErrors from "http-errors";
 import mime from "mime/lite";
 import { z } from "zod";
-import { getFolders } from "~/lib/fs";
-import { iconExists, readIcon } from "~/lib/icons";
+import { iconSets } from "~/generated/sets";
 import { zValidator } from "~/middlewares/zod-validator";
 
-const supportedIconSets = await getFolders("./icons");
 const extensionSchema = z.enum(["svg"]);
 const paramsSchema = z.object({
   set: z
     .string()
     .nonempty()
-    .refine((set) => supportedIconSets.includes(set), "Unsupported icon set"),
+    .refine(
+      (set) => (iconSets as readonly string[]).includes(set),
+      "Unsupported icon set",
+    ),
   name: z
     .string()
     .nonempty()
@@ -32,20 +33,11 @@ const paramsSchema = z.object({
 export const iconsRoute = new Hono().get(
   "/:set/:name",
   zValidator("param", paramsSchema),
-  (c) => {
+  async (c) => {
     const {
       set,
       name: [name, ext],
     } = c.req.valid("param");
-
-    if (!iconExists(set, name, ext)) {
-      throw new httpErrors.NotFound(`Unknown icon: ${set}/${name}.${ext}`);
-    }
-
-    const svg = readIcon(set, name, ext);
-    if (!svg) {
-      throw new httpErrors.InternalServerError("Failed to read icon file");
-    }
 
     const contentType = mime.getType(ext);
 
@@ -55,6 +47,11 @@ export const iconsRoute = new Hono().get(
       );
     }
 
-    return c.body(svg, 200, { "Content-Type": contentType });
+    const file = Bun.file(`./icons/${set}/${name}.${ext}`);
+    if (!(await file.exists())) {
+      throw new httpErrors.NotFound(`Unknown icon: ${set}/${name}.${ext}`);
+    }
+
+    return c.body(await file.text(), 200, { "Content-Type": contentType });
   },
 );
