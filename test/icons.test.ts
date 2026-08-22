@@ -215,6 +215,13 @@ describe("Fill query parameter", () => {
     expect(body).toContain('stroke="#ff0000"');
   });
 
+  test("applies hex color without hash to SVG output", async () => {
+    const res = await app.request("/lucide/activity.svg?fill=0000FF");
+    expect(res.status).toBe(200);
+    const body = await res.text();
+    expect(body).toContain('stroke="#0000FF"');
+  });
+
   test("applies rgb color to SVG output", async () => {
     const res = await app.request(
       "/lucide/activity.svg?fill=rgb%28255%2C%200%2C%200%29",
@@ -237,6 +244,21 @@ describe("Fill query parameter", () => {
     );
     expect(res.status).toBe(400);
   });
+
+  test.each([
+    ["svg", "image/svg+xml"],
+    ["png", "image/png"],
+    ["jpg", "image/jpeg"],
+    ["jpeg", "image/jpeg"],
+    ["webp", "image/webp"],
+  ])("applies fill when requesting .%s", async (extension, contentType) => {
+    const res = await app.request(
+      `/lucide/activity.${extension}?fill=%2300ff00`,
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toContain(contentType);
+  });
 });
 
 describe("Background query parameter", () => {
@@ -255,6 +277,15 @@ describe("Background query parameter", () => {
     const body = await res.text();
     expect(body).toContain(
       '<rect width="100%" height="100%" fill="#ff0000" stroke="none"/>',
+    );
+  });
+
+  test("applies hex color without hash to SVG background", async () => {
+    const res = await app.request("/lucide/activity.svg?background=00FF00");
+    expect(res.status).toBe(200);
+    const body = await res.text();
+    expect(body).toContain(
+      '<rect width="100%" height="100%" fill="#00FF00" stroke="none"/>',
     );
   });
 

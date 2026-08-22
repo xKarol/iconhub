@@ -4,6 +4,7 @@ import mime from "mime/lite";
 import { z } from "zod";
 import {
   isSupportedColor,
+  normalizeColor,
   SIZE_DEFAULT,
   SIZE_MAX,
   SIZE_MIN,
@@ -43,7 +44,8 @@ const colorSchema = z
   .refine(
     isSupportedColor,
     "Unsupported color. Expected hex (#rgb or #rrggbb), rgb() without alpha, or a CSS named color",
-  );
+  )
+  .transform(normalizeColor);
 
 const querySchema = z.object({
   size: z.coerce
