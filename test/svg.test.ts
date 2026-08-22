@@ -1,5 +1,14 @@
 import { describe, expect, test } from "bun:test";
-import { injectSvgSize, injectSvgStroke } from "~/lib/svg";
+import { injectSvgBackground, injectSvgSize, injectSvgStroke } from "~/lib/svg";
+
+describe("injectSvgBackground", () => {
+  test("inserts a background rectangle before SVG content", () => {
+    const svg = '<svg viewBox="0 0 24 24"><path d="M0 0"/></svg>';
+    expect(injectSvgBackground(svg, "red")).toBe(
+      '<svg viewBox="0 0 24 24"><rect width="100%" height="100%" fill="red" stroke="none"/><path d="M0 0"/></svg>',
+    );
+  });
+});
 
 describe("injectSvgStroke", () => {
   test("adds stroke attribute when missing", () => {

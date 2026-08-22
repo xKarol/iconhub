@@ -239,6 +239,51 @@ describe("Fill query parameter", () => {
   });
 });
 
+describe("Background query parameter", () => {
+  test("applies named color to SVG background", async () => {
+    const res = await app.request("/lucide/activity.svg?background=red");
+    expect(res.status).toBe(200);
+    const body = await res.text();
+    expect(body).toContain(
+      '<rect width="100%" height="100%" fill="red" stroke="none"/>',
+    );
+  });
+
+  test("applies hex color to SVG background", async () => {
+    const res = await app.request("/lucide/activity.svg?background=%23ff0000");
+    expect(res.status).toBe(200);
+    const body = await res.text();
+    expect(body).toContain(
+      '<rect width="100%" height="100%" fill="#ff0000" stroke="none"/>',
+    );
+  });
+
+  test("rejects invalid background color values with 400", async () => {
+    const res = await app.request(
+      "/lucide/activity.svg?background=javascript%3Aalert%281%29",
+    );
+    expect(res.status).toBe(400);
+  });
+
+  test.each([
+    ["svg", "image/svg+xml"],
+    ["png", "image/png"],
+    ["jpg", "image/jpeg"],
+    ["jpeg", "image/jpeg"],
+    ["webp", "image/webp"],
+  ])(
+    "applies background when requesting .%s",
+    async (extension, contentType) => {
+      const res = await app.request(
+        `/lucide/activity.${extension}?background=%2300ff00`,
+      );
+
+      expect(res.status).toBe(200);
+      expect(res.headers.get("content-type")).toContain(contentType);
+    },
+  );
+});
+
 describe("Remix set", () => {
   test("returns SVG for remix icon", async () => {
     const res: Response = await client[":set"][":name"].$get({

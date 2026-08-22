@@ -11,3 +11,10 @@ export function injectSvgStroke(svg: string, stroke: string): string {
     return `<svg${cleaned} stroke="${stroke}">`;
   });
 }
+
+export function injectSvgBackground(svg: string, background: string): string {
+  return svg.replace(
+    /(<svg\b[^>]*>)/,
+    `$1<rect width="100%" height="100%" fill="${background}" stroke="none"/>`,
+  );
+}

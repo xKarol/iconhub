@@ -10,7 +10,7 @@ import {
 } from "~/constants";
 import { iconSets } from "~/generated/sets";
 import { convertSvg, type ImageExtension } from "~/lib/convert";
-import { injectSvgSize, injectSvgStroke } from "~/lib/svg";
+import { injectSvgBackground, injectSvgSize, injectSvgStroke } from "~/lib/svg";
 import { zValidator } from "~/middlewares/zod-validator";
 
 const extensionSchema = z.enum(["svg", "png", "jpg", "jpeg", "webp"]);
@@ -51,9 +51,9 @@ const querySchema = z.object({
     .int()
     .min(SIZE_MIN, `Size must be at least ${SIZE_MIN}`)
     .max(SIZE_MAX, `Size must be at most ${SIZE_MAX}`)
-    .optional()
-    .default(SIZE_DEFAULT),
+    .optional(),
   fill: colorSchema.optional(),
+  background: colorSchema.optional(),
 });
 
 type Bindings = {
@@ -73,7 +73,7 @@ export const iconsRoute = new Hono<{
       set,
       name: [name, ext],
     } = c.req.valid("param");
-    const { size, fill } = c.req.valid("query");
+    const { size, fill, background } = c.req.valid("query");
 
     let svg: string;
     if (c.env?.ASSETS) {
@@ -99,7 +99,10 @@ export const iconsRoute = new Hono<{
       );
     }
 
-    let outputSvg = injectSvgSize(svg, size);
+    let outputSvg = injectSvgSize(svg, size ?? SIZE_DEFAULT);
+    if (background) {
+      outputSvg = injectSvgBackground(outputSvg, background);
+    }
     if (fill) {
       outputSvg = injectSvgStroke(outputSvg, fill);
     }
