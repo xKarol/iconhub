@@ -23,8 +23,10 @@ IconHub turns a folder of SVG icons into a URL-addressable API. Request an icon 
 
 ## Features
 
-- Single endpoint that serves any icon as `svg`, `png`, `jpg`, or `webp`
+- Single endpoint that serves any icon as `svg`, `png`, `jpg`, `jpeg`, or `webp`
 - On-the-fly sizing via the `size` query parameter (1–128, default 24)
+- Icon color customization via the `fill` query parameter
+- Background color customization via the `background` query parameter
 - Rasterization with WASM (`resvg` for rendering, `photon` for encoding)
 - Multiple icon sets backed by auto-generated registries (currently [Lucide](https://lucide.dev/), [Tabler](https://tabler.io/icons), and [Remix Icon](https://remixicon.com/))
 - Strict request validation with Zod and centralized JSON error responses
@@ -53,12 +55,19 @@ GET /{set}/{name}.{ext}?size={n}
 | `name` | Icon name plus extension, e.g. `zap.png` |
 | `ext` | Output format: `svg`, `png`, `jpg`, `jpeg`, or `webp` |
 | `size` | Optional square size in pixels, integer between 1 and 128 (default 24) |
+| `fill` | Optional icon color: CSS named color, `rgb()` without alpha, or 3/6-digit HEX with or without `#` |
+| `background` | Optional background color with the same accepted formats as `fill` |
+
+Color values can be passed as named colors (`red`), RGB (`rgb(255, 0, 0)`), or HEX (`0000FF`, `%230000FF`). A literal `#` starts the URL fragment, so HEX values containing `#` must use URL encoding (`%23`).
 
 ### Examples
 
 ```text
 https://iconhub.xkarol.workers.dev/lucide/activity.svg
 https://iconhub.xkarol.workers.dev/lucide/activity.svg?size=48
+https://iconhub.xkarol.workers.dev/lucide/activity.svg?fill=0000FF
+https://iconhub.xkarol.workers.dev/lucide/activity.svg?background=F5F5F5
+https://iconhub.xkarol.workers.dev/lucide/activity.svg?fill=%23FFFFFF&background=%23000000
 https://iconhub.xkarol.workers.dev/lucide/zap.png?size=128
 https://iconhub.xkarol.workers.dev/lucide/home.webp
 https://iconhub.xkarol.workers.dev/tabler/home.svg?size=48
