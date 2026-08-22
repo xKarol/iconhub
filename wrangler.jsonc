@@ -6,6 +6,7 @@
   "send_metrics": false,
   "assets": {
     "directory": "./icons",
-    "binding": "ASSETS"
+    "binding": "ASSETS",
+    "run_worker_first": ["/lucide/*", "/tabler/*", "/remix/*"]
   }
 }
