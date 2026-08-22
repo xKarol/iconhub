@@ -26,7 +26,7 @@ IconHub turns a folder of SVG icons into a URL-addressable API. Request an icon 
 - Single endpoint that serves any icon as `svg`, `png`, `jpg`, or `webp`
 - On-the-fly sizing via the `size` query parameter (1–128, default 24)
 - Rasterization with WASM (`resvg` for rendering, `photon` for encoding)
-- Multiple icon sets backed by auto-generated registries (currently [Lucide](https://lucide.dev/) and [Tabler](https://tabler.io/icons))
+- Multiple icon sets backed by auto-generated registries (currently [Lucide](https://lucide.dev/), [Tabler](https://tabler.io/icons), and [Remix Icon](https://remixicon.com/))
 - Strict request validation with Zod and centralized JSON error responses
 - CORS enabled, so icons work directly in browser apps
 - No database, no secrets, no configuration required to run
@@ -62,6 +62,7 @@ https://iconhub.xkarol.workers.dev/lucide/activity.svg?size=48
 https://iconhub.xkarol.workers.dev/lucide/zap.png?size=128
 https://iconhub.xkarol.workers.dev/lucide/home.webp
 https://iconhub.xkarol.workers.dev/tabler/home.svg?size=48
+https://iconhub.xkarol.workers.dev/remix/home.svg?size=48
 ```
 
 Download an icon:
@@ -157,7 +158,8 @@ The generated `src/generated/sets.ts` drives both request validation and the lis
 │   └── workflows/          CI checks and deploy-on-main workflow
 ├── icons/
 │   ├── lucide/             Lucide icon SVGs served as static assets
-│   └── tabler/             Tabler icon SVGs served as static assets
+│   ├── tabler/             Tabler icon SVGs served as static assets
+│   └── remix/              Remix icon SVGs served as static assets
 ├── scripts/
 │   └── generate-sets.ts    Regenerates the icon set registry
 ├── src/

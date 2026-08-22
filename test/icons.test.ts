@@ -199,3 +199,21 @@ describe("Tabler set", () => {
     expect(res.headers.get("content-type")).toContain("image/png");
   });
 });
+
+describe("Remix set", () => {
+  test("returns SVG for remix icon", async () => {
+    const res: Response = await client[":set"][":name"].$get({
+      param: { set: "remix", name: "home.svg" },
+    });
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toContain("image/svg+xml");
+    const body = await res.text();
+    expect(body).toContain("<svg");
+  });
+
+  test("rasterizes remix icon", async () => {
+    const res = await app.request("/remix/home.png?size=64");
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toContain("image/png");
+  });
+});
