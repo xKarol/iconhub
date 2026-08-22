@@ -1,5 +1,8 @@
 <p align="center">
-  <img src="./icons/lucide/shapes.svg" alt="IconHub" width="80" height="80">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://iconhub.xkarol.workers.dev/lucide/shapes.svg?fill=ffffff">
+    <img src="https://iconhub.xkarol.workers.dev/lucide/shapes.svg?fill=000000" alt="IconHub" width="80" height="80">
+  </picture>
 </p>
 
 <h1 align="center">IconHub</h1>
