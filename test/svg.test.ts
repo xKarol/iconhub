@@ -1,5 +1,37 @@
 import { describe, expect, test } from "bun:test";
-import { injectSvgSize } from "~/lib/svg";
+import { injectSvgSize, injectSvgStroke } from "~/lib/svg";
+
+describe("injectSvgStroke", () => {
+  test("adds stroke attribute when missing", () => {
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg"></svg>';
+    expect(injectSvgStroke(svg, "red")).toBe(
+      '<svg xmlns="http://www.w3.org/2000/svg" stroke="red"></svg>',
+    );
+  });
+
+  test("replaces existing stroke attribute on root element", () => {
+    const svg =
+      '<svg xmlns="http://www.w3.org/2000/svg" stroke="#000000"></svg>';
+    expect(injectSvgStroke(svg, "#ff0000")).toBe(
+      '<svg xmlns="http://www.w3.org/2000/svg" stroke="#ff0000"></svg>',
+    );
+  });
+
+  test("keeps other root attributes intact", () => {
+    const svg =
+      '<svg xmlns="http://www.w3.org/2000/svg" stroke-width="2"></svg>';
+    const result = injectSvgStroke(svg, "blue");
+    expect(result).toContain('stroke-width="2"');
+    expect(result).toContain('stroke="blue"');
+  });
+
+  test("does not modify stroke on child elements", () => {
+    const svg = '<svg><path d="M0 0" stroke="green"/></svg>';
+    const result = injectSvgStroke(svg, "red");
+    expect(result).toContain('<svg stroke="red">');
+    expect(result).toContain('stroke="green"');
+  });
+});
 
 describe("injectSvgSize", () => {
   test("sets width and height on SVG without existing dimensions", () => {

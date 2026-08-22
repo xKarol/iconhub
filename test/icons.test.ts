@@ -200,6 +200,45 @@ describe("Tabler set", () => {
   });
 });
 
+describe("Fill query parameter", () => {
+  test("applies named color to SVG output", async () => {
+    const res = await app.request("/lucide/activity.svg?fill=red");
+    expect(res.status).toBe(200);
+    const body = await res.text();
+    expect(body).toContain('stroke="red"');
+  });
+
+  test("applies hex color to SVG output", async () => {
+    const res = await app.request("/lucide/activity.svg?fill=%23ff0000");
+    expect(res.status).toBe(200);
+    const body = await res.text();
+    expect(body).toContain('stroke="#ff0000"');
+  });
+
+  test("applies rgb color to SVG output", async () => {
+    const res = await app.request(
+      "/lucide/activity.svg?fill=rgb%28255%2C%200%2C%200%29",
+    );
+    expect(res.status).toBe(200);
+    const body = await res.text();
+    expect(body).toContain('stroke="rgb(255, 0, 0)"');
+  });
+
+  test("rejects rgba colors with 400", async () => {
+    const res = await app.request(
+      "/lucide/activity.svg?fill=rgba%28255%2C%200%2C%200%2C%200.5%29",
+    );
+    expect(res.status).toBe(400);
+  });
+
+  test("rejects invalid color values with 400", async () => {
+    const res = await app.request(
+      "/lucide/activity.svg?fill=javascript%3Aalert%281%29",
+    );
+    expect(res.status).toBe(400);
+  });
+});
+
 describe("Remix set", () => {
   test("returns SVG for remix icon", async () => {
     const res: Response = await client[":set"][":name"].$get({
