@@ -47,16 +47,18 @@ const colorSchema = z
   )
   .transform(normalizeColor);
 
-const querySchema = z.object({
-  size: z.coerce
-    .number()
-    .int()
-    .min(SIZE_MIN, `Size must be at least ${SIZE_MIN}`)
-    .max(SIZE_MAX, `Size must be at most ${SIZE_MAX}`)
-    .optional(),
-  fill: colorSchema.optional(),
-  background: colorSchema.optional(),
-});
+const querySchema = z
+  .object({
+    size: z.coerce
+      .number()
+      .int()
+      .min(SIZE_MIN, `Size must be at least ${SIZE_MIN}`)
+      .max(SIZE_MAX, `Size must be at most ${SIZE_MAX}`)
+      .optional(),
+    fill: colorSchema.optional(),
+    background: colorSchema.optional(),
+  })
+  .optional();
 
 type Bindings = {
   ASSETS?: {
@@ -75,7 +77,7 @@ export const iconsRoute = new Hono<{
       set,
       name: [name, ext],
     } = c.req.valid("param");
-    const { size, fill, background } = c.req.valid("query");
+    const { size, fill, background } = c.req.valid("query") ?? {};
 
     let svg: string;
     if (c.env?.ASSETS) {
