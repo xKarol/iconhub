@@ -181,3 +181,21 @@ describe("Error handler integration", () => {
     expect(body.status).toBe(res.status);
   });
 });
+
+describe("Tabler set", () => {
+  test("returns SVG for tabler icon", async () => {
+    const res: Response = await client[":set"][":name"].$get({
+      param: { set: "tabler", name: "home.svg" },
+    });
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toContain("image/svg+xml");
+    const body = await res.text();
+    expect(body).toContain("<svg");
+  });
+
+  test("rasterizes tabler icon", async () => {
+    const res = await app.request("/tabler/home.png?size=64");
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toContain("image/png");
+  });
+});
