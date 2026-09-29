@@ -51,6 +51,29 @@ describe("Size query parameter", () => {
     expect(res.status).toBe(400);
   });
 
+  test("falls back to the default size when size is empty", async () => {
+    const res = await app.request("/lucide/activity.svg?size=");
+    expect(res.status).toBe(200);
+    const body = await res.text();
+    expect(body).toContain('width="24"');
+    expect(body).toContain('height="24"');
+  });
+
+  test("falls back to the default size when size is only whitespace", async () => {
+    const res = await app.request("/lucide/activity.svg?size=%20%20");
+    expect(res.status).toBe(200);
+    const body = await res.text();
+    expect(body).toContain('width="24"');
+  });
+
+  test("keeps other params when size is empty", async () => {
+    const res = await app.request("/lucide/activity.svg?size=&fill=FF0000");
+    expect(res.status).toBe(200);
+    const body = await res.text();
+    expect(body).toContain('width="24"');
+    expect(body).toContain('stroke="#FF0000"');
+  });
+
   test("PNG with custom size returns image", async () => {
     const res = await app.request("/lucide/activity.png?size=32");
     expect(res.status).toBe(200);

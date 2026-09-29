@@ -50,12 +50,15 @@ const colorSchema = z
 
 const querySchema = z
   .object({
-    size: z.coerce
-      .number()
-      .int()
-      .min(SIZE_MIN, `Size must be at least ${SIZE_MIN}`)
-      .max(SIZE_MAX, `Size must be at most ${SIZE_MAX}`)
-      .optional(),
+    size: z.preprocess(
+      (val) => (typeof val === "string" && val.trim() === "" ? undefined : val),
+      z.coerce
+        .number()
+        .int("Size must be an integer")
+        .min(SIZE_MIN, `Size must be at least ${SIZE_MIN}`)
+        .max(SIZE_MAX, `Size must be at most ${SIZE_MAX}`)
+        .optional(),
+    ),
     fill: colorSchema.optional(),
     background: colorSchema.optional(),
   })
