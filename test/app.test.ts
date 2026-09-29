@@ -57,3 +57,21 @@ describe("Size query parameter", () => {
     expect(res.headers.get("content-type")).toContain("image/png");
   });
 });
+
+describe("Fill query parameter", () => {
+  test("colors stroke-based icon sets via stroke", async () => {
+    const res = await app.request("/lucide/activity.svg?fill=FF0000");
+    expect(res.status).toBe(200);
+    const body = await res.text();
+    expect(body).toContain('stroke="#FF0000"');
+    expect(body).toContain('fill="none"');
+  });
+
+  test("colors fill-based icon sets via fill", async () => {
+    const res = await app.request("/remix/home.svg?fill=FF0000");
+    expect(res.status).toBe(200);
+    const body = await res.text();
+    expect(body).toContain('fill="#FF0000"');
+    expect(body).not.toContain("stroke=");
+  });
+});

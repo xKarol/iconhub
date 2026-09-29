@@ -1,3 +1,5 @@
+import type { ColorAttribute } from "~/constants";
+
 export function injectSvgSize(svg: string, size: number): string {
   return svg.replace(/<svg\b([^>]*)>/, (_match, attrs: string) => {
     const cleaned = attrs.replace(/\s+(width|height)="[^"]*"/g, "");
@@ -5,10 +7,17 @@ export function injectSvgSize(svg: string, size: number): string {
   });
 }
 
-export function injectSvgStroke(svg: string, stroke: string): string {
+export function injectSvgColor(
+  svg: string,
+  color: string,
+  attribute: ColorAttribute,
+): string {
   return svg.replace(/<svg\b([^>]*)>/, (_match, attrs: string) => {
-    const cleaned = attrs.replace(/\s+stroke="[^"]*"/g, "");
-    return `<svg${cleaned} stroke="${stroke}">`;
+    const cleaned = attrs.replace(
+      new RegExp(`\\s+${attribute}="[^"]*"`, "g"),
+      "",
+    );
+    return `<svg${cleaned} ${attribute}="${color}">`;
   });
 }
 

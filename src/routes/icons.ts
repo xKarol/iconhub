@@ -3,6 +3,7 @@ import httpErrors from "http-errors";
 import mime from "mime/lite";
 import { z } from "zod";
 import {
+  getColorAttribute,
   isSupportedColor,
   normalizeColor,
   SIZE_DEFAULT,
@@ -11,7 +12,7 @@ import {
 } from "~/constants";
 import { iconSets } from "~/generated/sets";
 import { convertSvg, type ImageExtension } from "~/lib/convert";
-import { injectSvgBackground, injectSvgSize, injectSvgStroke } from "~/lib/svg";
+import { injectSvgBackground, injectSvgColor, injectSvgSize } from "~/lib/svg";
 import { zValidator } from "~/middlewares/zod-validator";
 
 const extensionSchema = z.enum(["svg", "png", "jpg", "jpeg", "webp"]);
@@ -108,7 +109,7 @@ export const iconsRoute = new Hono<{
       outputSvg = injectSvgBackground(outputSvg, background);
     }
     if (fill) {
-      outputSvg = injectSvgStroke(outputSvg, fill);
+      outputSvg = injectSvgColor(outputSvg, fill, getColorAttribute(set));
     }
 
     if (ext === "svg") {

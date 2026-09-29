@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { injectSvgBackground, injectSvgSize, injectSvgStroke } from "~/lib/svg";
+import { injectSvgBackground, injectSvgColor, injectSvgSize } from "~/lib/svg";
 
 describe("injectSvgBackground", () => {
   test("inserts a background rectangle before SVG content", () => {
@@ -10,35 +10,51 @@ describe("injectSvgBackground", () => {
   });
 });
 
-describe("injectSvgStroke", () => {
+describe("injectSvgColor", () => {
   test("adds stroke attribute when missing", () => {
     const svg = '<svg xmlns="http://www.w3.org/2000/svg"></svg>';
-    expect(injectSvgStroke(svg, "red")).toBe(
+    expect(injectSvgColor(svg, "red", "stroke")).toBe(
       '<svg xmlns="http://www.w3.org/2000/svg" stroke="red"></svg>',
+    );
+  });
+
+  test("adds fill attribute when missing", () => {
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg"></svg>';
+    expect(injectSvgColor(svg, "red", "fill")).toBe(
+      '<svg xmlns="http://www.w3.org/2000/svg" fill="red"></svg>',
     );
   });
 
   test("replaces existing stroke attribute on root element", () => {
     const svg =
       '<svg xmlns="http://www.w3.org/2000/svg" stroke="#000000"></svg>';
-    expect(injectSvgStroke(svg, "#ff0000")).toBe(
+    expect(injectSvgColor(svg, "#ff0000", "stroke")).toBe(
       '<svg xmlns="http://www.w3.org/2000/svg" stroke="#ff0000"></svg>',
+    );
+  });
+
+  test("replaces existing fill attribute on root element", () => {
+    const svg =
+      '<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"></svg>';
+    expect(injectSvgColor(svg, "#ff0000", "fill")).toBe(
+      '<svg xmlns="http://www.w3.org/2000/svg" fill="#ff0000"></svg>',
     );
   });
 
   test("keeps other root attributes intact", () => {
     const svg =
       '<svg xmlns="http://www.w3.org/2000/svg" stroke-width="2"></svg>';
-    const result = injectSvgStroke(svg, "blue");
+    const result = injectSvgColor(svg, "blue", "stroke");
     expect(result).toContain('stroke-width="2"');
     expect(result).toContain('stroke="blue"');
   });
 
-  test("does not modify stroke on child elements", () => {
-    const svg = '<svg><path d="M0 0" stroke="green"/></svg>';
-    const result = injectSvgStroke(svg, "red");
-    expect(result).toContain('<svg stroke="red">');
+  test("does not modify color attributes on child elements", () => {
+    const svg = '<svg><path d="M0 0" stroke="green" fill="yellow"/></svg>';
+    const result = injectSvgColor(svg, "red", "fill");
+    expect(result).toContain('<svg fill="red">');
     expect(result).toContain('stroke="green"');
+    expect(result).toContain('fill="yellow"');
   });
 });
 

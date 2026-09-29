@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { isSupportedColor } from "~/constants";
+import { getColorAttribute, isSupportedColor } from "~/constants";
 
 describe("isSupportedColor", () => {
   test("accepts CSS rgb percentages", () => {
@@ -12,5 +12,21 @@ describe("isSupportedColor", () => {
 
   test("rejects four-digit hex colors", () => {
     expect(isSupportedColor("#f008")).toBe(false);
+  });
+});
+
+describe("getColorAttribute", () => {
+  test("returns stroke for stroke-based icon sets", () => {
+    expect(getColorAttribute("lucide")).toBe("stroke");
+    expect(getColorAttribute("tabler")).toBe("stroke");
+  });
+
+  test("returns fill for fill-based icon sets", () => {
+    expect(getColorAttribute("remix")).toBe("fill");
+    expect(getColorAttribute("phosphor")).toBe("fill");
+  });
+
+  test("falls back to stroke for unknown icon sets", () => {
+    expect(getColorAttribute("unknown")).toBe("stroke");
   });
 });
