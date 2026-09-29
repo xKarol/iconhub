@@ -31,7 +31,7 @@ IconHub turns a folder of SVG icons into a URL-addressable API. Request an icon 
 - Icon color customization via the `fill` query parameter
 - Background color customization via the `background` query parameter
 - Rasterization with WASM (`resvg` for rendering, `photon` for encoding)
-- Multiple icon sets backed by auto-generated registries (currently [Lucide](https://lucide.dev/), [Tabler](https://tabler.io/icons), and [Remix Icon](https://remixicon.com/))
+- Multiple icon sets backed by auto-generated registries (currently [Lucide](https://lucide.dev/), [Phosphor](https://phosphoricons.com/), [Remix Icon](https://remixicon.com/), and [Tabler](https://tabler.io/icons))
 - Strict request validation with Zod and centralized JSON error responses
 - CORS enabled, so icons work directly in browser apps
 - No database, no secrets, no configuration required to run
@@ -63,6 +63,8 @@ GET /{set}/{name}.{ext}?size={n}
 
 Color values can be passed as named colors (`red`), RGB (`rgb(255, 0, 0)`), or HEX (`0000FF`, `%230000FF`). A literal `#` starts the URL fragment, so HEX values containing `#` must use URL encoding (`%23`).
 
+The color is applied to whichever attribute the icon set draws with: `stroke` for stroke-based sets (`lucide`, `tabler`) and `fill` for fill-based sets (`remix`, `phosphor`).
+
 ### Examples
 
 ```text
@@ -75,6 +77,7 @@ https://iconhub.xkarol.workers.dev/lucide/zap.png?size=128
 https://iconhub.xkarol.workers.dev/lucide/home.webp
 https://iconhub.xkarol.workers.dev/tabler/home.svg?size=48
 https://iconhub.xkarol.workers.dev/remix/home.svg?size=48
+https://iconhub.xkarol.workers.dev/phosphor/house.svg?size=48
 ```
 
 Download an icon:
@@ -170,8 +173,9 @@ The generated `src/generated/sets.ts` drives both request validation and the lis
 │   └── workflows/          CI checks and deploy-on-main workflow
 ├── icons/
 │   ├── lucide/             Lucide icon SVGs served as static assets
-│   ├── tabler/             Tabler icon SVGs served as static assets
-│   └── remix/              Remix icon SVGs served as static assets
+│   ├── phosphor/           Phosphor icon SVGs served as static assets
+│   ├── remix/              Remix icon SVGs served as static assets
+│   └── tabler/             Tabler icon SVGs served as static assets
 ├── scripts/
 │   └── generate-sets.ts    Regenerates the icon set registry
 ├── src/

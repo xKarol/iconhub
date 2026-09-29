@@ -75,3 +75,41 @@ describe("Fill query parameter", () => {
     expect(body).not.toContain("stroke=");
   });
 });
+
+describe("Phosphor icon set", () => {
+  test("serves an icon with the default size", async () => {
+    const res = await app.request("/phosphor/house.svg");
+    expect(res.status).toBe(200);
+    const body = await res.text();
+    expect(body).toContain('width="24"');
+    expect(body).toContain('height="24"');
+  });
+
+  test("serves an icon with a custom size", async () => {
+    const res = await app.request("/phosphor/house.svg?size=64");
+    expect(res.status).toBe(200);
+    const body = await res.text();
+    expect(body).toContain('width="64"');
+  });
+
+  test("colors the icon via fill", async () => {
+    const res = await app.request("/phosphor/house.svg?fill=FF0000");
+    expect(res.status).toBe(200);
+    const body = await res.text();
+    expect(body).toContain('fill="#FF0000"');
+    expect(body).not.toContain("stroke=");
+  });
+
+  test("serves an icon as PNG", async () => {
+    const res = await app.request("/phosphor/house.png?size=32");
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toContain("image/png");
+  });
+
+  test("returns 404 for an unknown phosphor icon", async () => {
+    const res = await app.request("/phosphor/nope.svg");
+    expect(res.status).toBe(404);
+    const body = await res.json();
+    expect(body.message).toBe("Unknown icon: phosphor/nope");
+  });
+});
