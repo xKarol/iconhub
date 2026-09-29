@@ -97,6 +97,24 @@ describe("Fill query parameter", () => {
     expect(body).toContain('fill="#FF0000"');
     expect(body).not.toContain("stroke=");
   });
+
+  test("accepts transparent as a fill color", async () => {
+    const res = await app.request("/lucide/activity.svg?fill=transparent");
+    expect(res.status).toBe(200);
+    const body = await res.text();
+    expect(body).toContain('stroke="transparent"');
+  });
+
+  test("accepts transparent as a background color", async () => {
+    const res = await app.request(
+      "/lucide/activity.svg?background=transparent",
+    );
+    expect(res.status).toBe(200);
+    const body = await res.text();
+    expect(body).toContain(
+      '<rect width="100%" height="100%" fill="transparent" stroke="none"/>',
+    );
+  });
 });
 
 describe("Phosphor icon set", () => {

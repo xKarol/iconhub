@@ -29,6 +29,10 @@ export function normalizeColor(value: string): string {
 
 export function isSupportedColor(value: string): boolean {
   const normalized = normalizeColor(value);
+  if (normalized.toLowerCase() === "transparent") {
+    return true;
+  }
+
   const parsed = colorString.get(normalized);
   if (parsed?.model !== "rgb" || parsed.value[3] !== 1) {
     return false;

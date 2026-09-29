@@ -13,6 +13,18 @@ describe("isSupportedColor", () => {
   test("rejects four-digit hex colors", () => {
     expect(isSupportedColor("#f008")).toBe(false);
   });
+
+  test("accepts the transparent keyword", () => {
+    expect(isSupportedColor("transparent")).toBe(true);
+  });
+
+  test("accepts the transparent keyword in mixed case", () => {
+    expect(isSupportedColor("Transparent")).toBe(true);
+  });
+
+  test("rejects other colors with a zero alpha channel", () => {
+    expect(isSupportedColor("rgba(255, 0, 0, 0)")).toBe(false);
+  });
 });
 
 describe("getColorAttribute", () => {
