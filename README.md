@@ -57,11 +57,13 @@ GET /{set}/{name}.{ext}?size={n}
 | `set` | Icon set name, e.g. `lucide`; validated against the generated registry |
 | `name` | Icon name plus extension, e.g. `zap.png` |
 | `ext` | Output format: `svg`, `png`, `jpg`, `jpeg`, or `webp` |
-| `size` | Optional square size in pixels, integer between 1 and 128 (default 24) |
-| `fill` | Optional icon color: CSS named color, `rgb()` without alpha, or 3/6-digit HEX with or without `#` |
+| `size` | Optional square size in pixels, integer between 1 and 128 (default 24). An empty value falls back to the default |
+| `fill` | Optional icon color: CSS named color, `rgb()` without alpha, `transparent`, or 3/6-digit HEX with or without `#` |
 | `background` | Optional background color with the same accepted formats as `fill` |
 
 Color values can be passed as named colors (`red`), RGB (`rgb(255, 0, 0)`), or HEX (`0000FF`, `%230000FF`). A literal `#` starts the URL fragment, so HEX values containing `#` must use URL encoding (`%23`).
+
+Colors must be fully opaque, so every zero-alpha form is rejected with `400` (`rgba(255, 0, 0, 0)`, `#ff000080`). The `transparent` keyword is the one exception, since it is useful for keeping the icon or its background invisible.
 
 The color is applied to whichever attribute the icon set draws with: `stroke` for stroke-based sets (`lucide`, `tabler`) and `fill` for fill-based sets (`remix`, `phosphor`).
 
@@ -74,7 +76,7 @@ https://iconhub.xkarol.workers.dev/lucide/activity.svg?fill=0000FF
 https://iconhub.xkarol.workers.dev/lucide/activity.svg?background=F5F5F5
 https://iconhub.xkarol.workers.dev/lucide/activity.svg?fill=%23FFFFFF&background=%23000000
 https://iconhub.xkarol.workers.dev/lucide/zap.png?size=128
-https://iconhub.xkarol.workers.dev/lucide/home.webp
+https://iconhub.xkarol.workers.dev/lucide/activity.webp
 https://iconhub.xkarol.workers.dev/tabler/home.svg?size=48
 https://iconhub.xkarol.workers.dev/remix/home.svg?size=48
 https://iconhub.xkarol.workers.dev/phosphor/house.svg?size=48
