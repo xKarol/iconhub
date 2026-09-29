@@ -4,6 +4,7 @@ import mime from "mime/lite";
 import { z } from "zod";
 import {
   getColorAttribute,
+  ICON_CACHE_CONTROL,
   isSupportedColor,
   normalizeColor,
   SIZE_DEFAULT,
@@ -116,13 +117,19 @@ export const iconsRoute = new Hono<{
     }
 
     if (ext === "svg") {
-      return c.body(outputSvg, 200, { "Content-Type": contentType });
+      return c.body(outputSvg, 200, {
+        "Content-Type": contentType,
+        "Cache-Control": ICON_CACHE_CONTROL,
+      });
     }
 
     const image = await convertSvg(outputSvg, ext as ImageExtension);
     return new Response(image.buffer as ArrayBuffer, {
       status: 200,
-      headers: { "Content-Type": contentType },
+      headers: {
+        "Content-Type": contentType,
+        "Cache-Control": ICON_CACHE_CONTROL,
+      },
     });
   },
 );

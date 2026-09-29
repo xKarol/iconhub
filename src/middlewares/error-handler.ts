@@ -2,6 +2,7 @@ import type { ErrorHandler } from "hono";
 import type { ContentfulStatusCode } from "hono/utils/http-status";
 import { isHttpError } from "http-errors";
 import { isZodErrorLike } from "zod-validation-error";
+import { ERROR_CACHE_CONTROL } from "~/constants";
 import { formatError } from "~/lib/errors";
 
 export const errorHandler: ErrorHandler = (err, c) => {
@@ -20,5 +21,6 @@ export const errorHandler: ErrorHandler = (err, c) => {
       }),
     },
     status,
+    { "Cache-Control": ERROR_CACHE_CONTROL },
   );
 };
